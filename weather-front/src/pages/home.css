@@ -1,0 +1,23 @@
+#home-form {
+    margin: 60px auto auto auto;
+    width: 500px;
+    height: 120px;
+}
+
+.box{
+    width: 1080px;
+    margin: 0 auto;
+}
+
+.h2{
+    text-align: left;
+    font-size: 26px;
+    padding-left: 30px;
+}
+
+.tableColum{
+    font-size: 18px;
+}
+
+
+

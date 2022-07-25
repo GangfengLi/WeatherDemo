@@ -1,0 +1,17 @@
+@import '~antd/dist/antd.css';
+
+.ant-card-head {
+    font-size: 24px;
+}
+
+.ant-card {
+    font-size: 18px;
+}
+
+.ant-form-item-label > label{
+    font-size: 18px;
+}
+
+.ant-btn {
+    font-size: 16px;
+}
