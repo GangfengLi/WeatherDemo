@@ -1,18 +1,18 @@
-import React, {Component, createRef, RefObject} from 'react';
+import React, {createRef, useState} from 'react';
 import {fetchData} from "../api/fetchData";
 import {Button, Divider, Form, FormInstance, Input, message} from "antd";
 import './home.css'
 import CurrentInfo from "./Current";
 import {Location} from "../models/location";
 import {Current} from "../models/current";
-import {ForecastDay} from "../models/forecast";
 import {ForecastTable} from "./Forecast";
+import {useDispatch} from "react-redux";
+import {IForecastAction} from "../store/reducer/forecast";
 
 interface IState {
     location?: Location,
     current?: Current,
-    forecast?: ForecastDay[],
-    showElem: boolean
+    showElem?: boolean
 }
 
 const layout = {
@@ -24,62 +24,63 @@ const tailLayout = {
     wrapperCol: {offset: 12, span: 16},
 };
 
-class Home extends Component<any, IState> {
-    formRef: RefObject<FormInstance>
+export const Home: React.FC<IState> = function () {
 
-    constructor(props: any, context: any) {
-        super(props, context);
-        this.formRef = createRef<FormInstance>()
-        this.state = {
-            showElem: false
-        }
-    }
+    const formRef = createRef<FormInstance>();
+    const [state, setState] = useState({
+        location: {} as Location,
+        current: {} as Current,
+        showElem: false
+    });
 
-    fetchData = (form: any) => {
+    const dispatch = useDispatch()
+
+    const fetch = (form: any) => {
         fetchData(form.code).then(response => {
             const location = response.data.location;
             const temp = response.data.current.temp_c;
             const condition = response.data.current.condition.text;
             const icon = 'https:' + response.data.current.condition.icon;
             const forecast = response.data.forecast.forecastday;
-            this.setState({
+            setState({
                 location,
                 current: {
                     temp,
                     condition,
                     icon
                 },
-                forecast,
                 showElem: true
             })
+
+            dispatch({
+                type: IForecastAction.CHANGE,
+                payload: {forecast: forecast}
+            })
+
         }).catch(err => {
             console.log(err)
             message.error('Fetch weather data failed')
         })
     }
 
-    render() {
-        return (
-            <div>
-                <Form id='home-form' {...layout} ref={this.formRef} onFinish={this.fetchData}>
-                    <Form.Item label='Type a Zip Code to Search' name='code'
-                               rules={[{required: true, message: 'Please input a zip code'}]}>
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item {...tailLayout}>
-                        <Button type="primary" htmlType="submit">
-                            Go
-                        </Button>
-                    </Form.Item>
-                </Form>
-                <div className='box' style={{display: this.state.showElem ? 'block' : 'none'}}>
-                    <CurrentInfo location={this.state.location} current={this.state.current}/>
-                    <Divider/>
-                    <ForecastTable forecast={this.state.forecast}/>
-                </div>
+    return (
+        <div>
+            <Form id='home-form' {...layout} ref={formRef} onFinish={fetch}>
+                <Form.Item label='Type a Zip Code to Search' name='code'
+                           rules={[{required: true, message: 'Please input a zip code'}]}>
+                    <Input/>
+                </Form.Item>
+                <Form.Item {...tailLayout}>
+                    <Button type="primary" htmlType="submit">
+                        Go
+                    </Button>
+                </Form.Item>
+            </Form>
+            <div className='box' style={{display: state.showElem ? 'block' : 'none'}}>
+                <CurrentInfo location={state.location} current={state.current}/>
+                <Divider/>
+                <ForecastTable/>
             </div>
-        );
-    }
+        </div>
+    );
 }
-
-export default Home;
