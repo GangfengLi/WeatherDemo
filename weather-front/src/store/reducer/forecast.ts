@@ -17,7 +17,8 @@ export enum IForecastAction {
     CHANGE
 }
 
-const forecast = (state: IForecastState = initForecastState, action: { type: IForecastAction, payload: any }) => {
+const forecast = (state: IForecastState = initForecastState,
+                  action: { type: IForecastAction, payload: any }) => {
     switch (action.type){
         case IForecastAction.INIT:
             return state;

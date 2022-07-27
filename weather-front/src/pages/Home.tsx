@@ -2,16 +2,13 @@ import React, {createRef, useState} from 'react';
 import {fetchData} from "../api/fetchData";
 import {Button, Divider, Form, FormInstance, Input, message} from "antd";
 import './home.css'
-import CurrentInfo from "./Current";
-import {Location} from "../models/location";
-import {Current} from "../models/current";
-import {ForecastTable} from "./Forecast";
+import {ForecastTable} from "../components/Forecast";
 import {useDispatch} from "react-redux";
 import {IForecastAction} from "../store/reducer/forecast";
+import {CurrentInfo} from "../components/Current";
+import {ICurrentAction} from "../store/reducer/current";
 
 interface IState {
-    location?: Location,
-    current?: Current,
     showElem?: boolean
 }
 
@@ -28,8 +25,6 @@ export const Home: React.FC<IState> = function () {
 
     const formRef = createRef<FormInstance>();
     const [state, setState] = useState({
-        location: {} as Location,
-        current: {} as Current,
         showElem: false
     });
 
@@ -43,13 +38,21 @@ export const Home: React.FC<IState> = function () {
             const icon = 'https:' + response.data.current.condition.icon;
             const forecast = response.data.forecast.forecastday;
             setState({
-                location,
-                current: {
-                    temp,
-                    condition,
-                    icon
-                },
                 showElem: true
+            })
+
+            dispatch({
+                type: ICurrentAction.CHANGE,
+                payload: {
+                    current: {
+                        location: location,
+                        current: {
+                            temp,
+                            condition,
+                            icon
+                        }
+                    }
+                }
             })
 
             dispatch({
@@ -77,7 +80,7 @@ export const Home: React.FC<IState> = function () {
                 </Form.Item>
             </Form>
             <div className='box' style={{display: state.showElem ? 'block' : 'none'}}>
-                <CurrentInfo location={state.location} current={state.current}/>
+                <CurrentInfo/>
                 <Divider/>
                 <ForecastTable/>
             </div>

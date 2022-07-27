@@ -1,15 +1,11 @@
-import React, {Component} from 'react';
+import React from 'react';
 import './App.css'
 import {Home} from "./pages/Home";
 
-class App extends Component {
-    render() {
-        return (
-            <div>
-                <Home></Home>
-            </div>
-        );
-    }
+export const App: React.FC = function () {
+    return (
+        <div>
+            <Home></Home>
+        </div>
+    );
 }
-
-export default App;

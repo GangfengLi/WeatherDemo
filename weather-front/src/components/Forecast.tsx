@@ -1,7 +1,7 @@
 import React from 'react';
 import {ForecastDay} from "../models/forecast";
 import {ColumnsType} from "antd/es/table/Table";
-import './home.css'
+import '../pages/home.css'
 import {useSelector} from "react-redux";
 import {rootState} from "../store";
 import {Table} from "antd";
@@ -33,7 +33,7 @@ const columns: ColumnsType<ForecastDay> = [
     }
 ]
 
-export const ForecastTable: React.FC = function (props, context) {
+export const ForecastTable: React.FC = function () {
 
     const {forecast} = useSelector((state: rootState) => state.forecast);
     const data = forecast && forecast.length > 0 ? forecast.map((d: any, index: any) => ({
