@@ -1,12 +1,9 @@
 import React, {createRef, useState} from 'react';
-import {fetchData} from "../api/fetchData";
-import {Button, Divider, Form, FormInstance, Input, message} from "antd";
+import {Button, Form, FormInstance, Input} from "antd";
 import './home.css'
-import {ForecastTable} from "../components/Forecast";
+import {Weather} from "../components/Weather";
 import {useDispatch} from "react-redux";
-import {IForecastAction} from "../store/reducer/forecast";
-import {CurrentInfo} from "../components/Current";
-import {ICurrentAction} from "../store/reducer/current";
+import {triggerUpdateWeather} from "../store/slices/weatherSlice";
 
 interface IState {
     showElem?: boolean
@@ -31,38 +28,10 @@ export const Home: React.FC<IState> = function () {
     const dispatch = useDispatch()
 
     const fetch = (form: any) => {
-        fetchData(form.code).then(response => {
-            const location = response.data.location;
-            const temp = response.data.current.temp_c;
-            const condition = response.data.current.condition.text;
-            const icon = 'https:' + response.data.current.condition.icon;
-            const forecast = response.data.forecast.forecastday;
-            setState({
-                showElem: true
-            })
-
-            dispatch({
-                type: ICurrentAction.CHANGE,
-                payload: {
-                    current: {
-                        location: location,
-                        current: {
-                            temp,
-                            condition,
-                            icon
-                        }
-                    }
-                }
-            })
-
-            dispatch({
-                type: IForecastAction.CHANGE,
-                payload: {forecast: forecast}
-            })
-
-        }).catch(err => {
-            console.log(err)
-            message.error('Fetch weather data failed')
+        const code: number = form.code;
+        dispatch(triggerUpdateWeather({code}))
+        setState({
+            showElem: true
         })
     }
 
@@ -80,9 +49,7 @@ export const Home: React.FC<IState> = function () {
                 </Form.Item>
             </Form>
             <div className='box' style={{display: state.showElem ? 'block' : 'none'}}>
-                <CurrentInfo/>
-                <Divider/>
-                <ForecastTable/>
+                <Weather/>
             </div>
         </div>
     );
